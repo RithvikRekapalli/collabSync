@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Realtime Collaboration Test</title>
+</head>
+<body>
+  <h2>Doc Collaboration (doc_id = 123)</h2>
+  <textarea id="editor" rows="10" cols="50" placeholder="Start typing..."></textarea>
+
+  <script>
+    const docId = "123";
+    const ws = new WebSocket(`ws://localhost:8000/ws/${docId}`);
+    const editor = document.getElementById("editor");
+
+    ws.onmessage = (event) => {
+      editor.value += "\n[Other User]: " + event.data;
+    };
+
+    editor.addEventListener("input", () => {
+      ws.send(editor.value);
+    });
+  </script>
+</body>
+</html>
