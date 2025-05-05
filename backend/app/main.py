@@ -30,3 +30,14 @@ async def websocket_endpoint(websocket: WebSocket, doc_id: str):
         redis_task.cancel()
         await pubsub.unsubscribe(channel)
         await websocket.close()
+
+
+# Temporary addition
+import asyncio
+from app.core.database import engine
+from app.models.document import Base
+
+@app.on_event("startup")
+async def on_startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)

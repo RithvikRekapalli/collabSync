@@ -11,13 +11,18 @@
     const docId = "123";
     const ws = new WebSocket(`ws://localhost:8000/ws/${docId}`);
     const editor = document.getElementById("editor");
+    let isLocalChange = false;
 
     ws.onmessage = (event) => {
-      editor.value += "\n[Other User]: " + event.data;
+      if (!isLocalChange) {
+        editor.value = event.data;
+      }
     };
 
     editor.addEventListener("input", () => {
+      isLocalChange = true;
       ws.send(editor.value);
+      setTimeout(() => isLocalChange = false, 50);
     });
   </script>
 </body>
