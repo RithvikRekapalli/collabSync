@@ -1,29 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Realtime Collaboration Test</title>
+  <title>Document Editor</title>
+  <style>
+    body { font-family: Arial; margin: 2rem; }
+    textarea {
+      width: 100%;
+      height: 400px;
+      font-size: 1rem;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
-  <h2>Doc Collaboration (doc_id = 123)</h2>
-  <textarea id="editor" rows="10" cols="50" placeholder="Start typing..."></textarea>
+  <h2>📝 Document Editor</h2>
+  <textarea id="editor" placeholder="Loading..."></textarea>
 
   <script>
-    const docId = "123";
-    const ws = new WebSocket(`ws://localhost:8000/ws/${docId}`);
+    const params = new URLSearchParams(window.location.search);
+    const docId = params.get("docId");
     const editor = document.getElementById("editor");
-    let isLocalChange = false;
 
+    if (!docId) {
+      alert("Missing docId in URL. Open via home.html");
+      throw new Error("Missing docId");
+    }
+
+    const ws = new WebSocket(`ws://localhost:8000/ws/${docId}`);
+    let suppress = false;
+
+    // Load initial content via REST API
+    fetch(`http://localhost:8000/documents/${docId}`)
+      .then(res => res.json())
+      .then(data => {
+        editor.value = data.content || "";
+      })
+      .catch(err => console.error("Failed to load doc:", err));
+
+    // Handle incoming real-time updates
     ws.onmessage = (event) => {
-      if (!isLocalChange) {
+      if (!suppress) {
         editor.value = event.data;
       }
     };
 
+    // Send new input to WebSocket & also save via PUT API
     editor.addEventListener("input", () => {
-      isLocalChange = true;
-      ws.send(editor.value);
-      setTimeout(() => isLocalChange = false, 50);
+      const content = editor.value;
+      suppress = true;
+
+      ws.send(content);
+
+      fetch(`http://localhost:8000/documents/${docId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content })
+      });
+
+      setTimeout(() => suppress = false, 100);
     });
+
+    ws.onopen = () => console.log("✅ WebSocket connected");
+    ws.onclose = () => console.log("🔌 WebSocket disconnected");
+    ws.onerror = (e) => console.error("WebSocket error", e);
   </script>
 </body>
 </html>

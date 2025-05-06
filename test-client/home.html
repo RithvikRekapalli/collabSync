@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Document Dashboard</title>
+  <style>
+    body { font-family: Arial; margin: 2rem; }
+    input { padding: 8px; width: 200px; }
+    button { padding: 8px 16px; }
+    ul { list-style: none; padding-left: 0; }
+    li { margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <h2>📄 Document Dashboard</h2>
+
+  <input id="title" placeholder="New document title" />
+  <button onclick="createDocument()">Create</button>
+
+  <h3>All Documents</h3>
+  <ul id="doc-list"></ul>
+
+  <script>
+    async function fetchDocuments() {
+      const res = await fetch("http://localhost:8000/documents/");
+      const docs = await res.json();
+      const list = document.getElementById("doc-list");
+      list.innerHTML = "";
+      docs.forEach(doc => {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="index.html?docId=${doc.id}" target="_blank">${doc.title}</a>`;
+        list.appendChild(li);
+      });
+    }
+
+    async function createDocument() {
+      const title = document.getElementById("title").value;
+      if (!title) return alert("Please enter a title");
+
+      const res = await fetch("http://localhost:8000/documents/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content: "" })
+      });
+
+      if (res.ok) {
+        document.getElementById("title").value = "";
+        await fetchDocuments();
+      } else {
+        alert("Failed to create document");
+      }
+    }
+
+    fetchDocuments();
+  </script>
+</body>
+</html>
