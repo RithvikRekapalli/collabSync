@@ -1,0 +1,63 @@
+/* App layout */
+.App {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Editor container */
+.ProseMirror {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 500px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+
+/* Focus border */
+.ProseMirror:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Placeholder when empty */
+.ProseMirror p.is-empty:first-child::before {
+  content: "Start typing...";
+  color: #aaa;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Heading styles */
+.ProseMirror h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 1.5rem 0 1rem;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 1.25rem 0 0.75rem;
+}
+
+/* Bullet and numbered lists */
+.ProseMirror ul,
+.ProseMirror ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.ProseMirror blockquote {
+  border-left: 4px solid #ccc;
+  padding-left: 1rem;
+  color: #666;
+  margin: 1rem 0;
+  font-style: italic;
+}

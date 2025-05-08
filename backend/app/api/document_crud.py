@@ -4,6 +4,7 @@ from sqlalchemy.future import select
 from app.models.document import Document
 from app.core.database import SessionLocal
 from pydantic import BaseModel
+from fastapi import Request
 
 router = APIRouter()
 
@@ -45,6 +46,9 @@ async def read_document(doc_id: int, db: AsyncSession = Depends(get_db)):
     return doc
 
 # Update document content
+class DocUpdate(BaseModel):
+    content: str
+
 @router.put("/documents/{doc_id}")
 async def update_document(doc_id: int, payload: DocUpdate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Document).where(Document.id == doc_id))

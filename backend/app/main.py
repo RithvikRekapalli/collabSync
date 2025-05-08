@@ -4,6 +4,7 @@ from sqlalchemy.future import select
 from app.models.document import Document
 from app.core.database import SessionLocal, engine, Base
 from app.api import document_crud
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -45,3 +46,13 @@ async def websocket_endpoint(websocket: WebSocket, doc_id: int, db: AsyncSession
 @app.get("/")
 async def root():
     return {"message": "Realtime Collaboration Server is running"}
+
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
